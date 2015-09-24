@@ -1,0 +1,31 @@
+{
+  "name": "oam-server-publisher",
+  "version": "0.1.0",
+  "description": "OAM Server Publisher",
+  "main": "server.js",
+  "author": "Rob Emanuele <rdemanuele@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hotosm/oam-server-publisher.git"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1.45",
+    "body-parser": "^1.13.1",
+    "chance": "^0.7.6",
+    "express": "^4.13.0",
+    "exquisite": "^1.2.0",
+    "morgan": "^1.6.0",
+    "request": "^2.58.0",
+    "require-env": "0.0.4",
+    "uuid": "^2.0.1"
+  },
+  "bugs": {
+    "url": "https://github.com/hotosm/oam-server-publisher/issues"
+  },
+  "homepage": "https://github.com/hotosm/oam-server-publisher",
+  "devDependencies": {}
+}
