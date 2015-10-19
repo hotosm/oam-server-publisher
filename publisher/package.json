@@ -9,9 +9,6 @@
     "type": "git",
     "url": "https://github.com/hotosm/oam-server-publisher.git"
   },
-  "scripts": {
-    "start": "node server.js"
-  },
   "dependencies": {
     "aws-sdk": "^2.1.45",
     "body-parser": "^1.13.1",
