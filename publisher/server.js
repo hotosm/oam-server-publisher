@@ -5,6 +5,7 @@ var path = require("path"),
     util = require("util");
 
 var AWS = require("aws-sdk"),
+    debug = require("debug"),
     env = require("require-env"),
     exquisite = require("exquisite");
 
@@ -12,9 +13,11 @@ var SQS_URL = env.require("OAM_STATUS_SQS_QUEUE_URL"),
     TOKEN = env.require("OAM_UPLOADER_TOKEN"),
     BUCKET = env.require("OAM_STATUS_BUCKET"),
     PREFIX = env.require("OAM_STATUS_PREFIX"),
-    DEBUG = true;
+    // TODO make this configurable
+    MOCK = true;
 
-var s3 = new AWS.S3();
+var log = debug("oam:publisher"),
+    s3 = new AWS.S3();
 
 var createTileJson = function(jobId, target, images) {
   var targetUrl = target;
@@ -55,15 +58,15 @@ var logStatus = function logStatus(msg, callback) {
     ACL: "bucket-owner-full-control",
     Body: JSON.stringify(status)
   };
-  console.log("Writing status");
+  log("Writing status");
   s3.putObject(params, function(err, data) {
     if (err) {
-      console.log("Error writing to %s", statusPath);
+      log("Error writing to %s", statusPath);
       return callback(err);
     }
 
-    console.log("Wrote status to %s", statusPath);
-    console.log(JSON.stringify(status, null, 2));
+    log("Wrote status to %s", statusPath);
+    log(JSON.stringify(status, null, 2));
     return callback();
   });
 };
@@ -74,8 +77,8 @@ var isLastStageSuccess = function isLastStageSuccess(stage, status) {
 
 var notifyJobComplete = function(jobId, images,callback) {
   // Hit OAM Catalog's endpoint
-  if (DEBUG) {
-    console.log("Mock Hitting OAM Catalog endpoint for", jobId);
+  if (MOCK) {
+    log("Mock Hitting OAM Catalog endpoint for", jobId);
     return callback();
   }
 
@@ -90,7 +93,7 @@ var processMessage = function processTask(msg, callback) {
       stage = msg.stage,
       status = msg.status;
 
-  console.log("Got message: JobId = %s, Stage = %s, Status = %s", jobId, stage, status);
+  log("Got message: JobId = %s, Stage = %s, Status = %s", jobId, stage, status);
 
   return logStatus(msg, function(err) {
     if (err) {

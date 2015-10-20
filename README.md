@@ -42,3 +42,8 @@ $ docker ps
 CONTAINER ID        IMAGE                   COMMAND             CREATED             STATUS              PORTS                    NAMES
 b1d7b15d6863        oam/server-publisher:latest   "npm start"         19 seconds ago      Up 16 seconds       0.0.0.0:8000->8000/tcp   oam-server-api
 ```
+
+### Environment Variables
+
+* `DEBUG` - Debug logging configuration. Set to `oam:*` for all messages.
+  Optional.
