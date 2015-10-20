@@ -49,17 +49,19 @@ var messageToStatus = function messageToStatus(msg) {
 };
 
 var logStatus = function logStatus(msg, callback) {
-  var status = messageToStatus(msg);
-  var statusKey = path.join(PREFIX, msg.jobId + "-status.json");
-  var statusPath = util.format("s3://%s/%s", BUCKET, statusKey);
-  var params = {
-    Bucket: BUCKET,
-    Key: statusKey,
-    ACL: "bucket-owner-full-control",
-    Body: JSON.stringify(status)
-  };
+  var status = messageToStatus(msg),
+      statusKey = path.join(PREFIX, msg.jobId + "-status.json"),
+      statusPath = util.format("s3://%s/%s", BUCKET, statusKey),
+      params = {
+        Bucket: BUCKET,
+        Key: statusKey,
+        ACL: "bucket-owner-full-control",
+        Body: JSON.stringify(status)
+      };
+
   log("Writing status");
-  s3.putObject(params, function(err, data) {
+
+  return s3.putObject(params, function(err, data) {
     if (err) {
       log("Error writing to %s", statusPath);
       return callback(err);
@@ -67,6 +69,7 @@ var logStatus = function logStatus(msg, callback) {
 
     log("Wrote status to %s", statusPath);
     log(JSON.stringify(status, null, 2));
+
     return callback();
   });
 };
