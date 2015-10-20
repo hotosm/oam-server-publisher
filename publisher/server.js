@@ -19,7 +19,7 @@ var s3 = new AWS.S3();
 var createTileJson = function(jobId, target, images) {
   var targetUrl = target;
   var parsed = url.parse(target);
-  if(parsed.protocol == "s3:") {
+  if (parsed.protocol === "s3:") {
     targetUrl = util.format("http://%s.s3.amazonaws.com%s", parsed.hostname, parsed.path);
   }
   return {
@@ -40,19 +40,19 @@ var messageToStatus = function messageToStatus(msg) {
       stage: "COMPLETE",
       tileJson: createTileJson(msg.jobId, msg.target, msg.images)
     };
-  } else {
-    return msg;
   }
+
+  return msg;
 };
 
 var logStatus = function logStatus(msg, callback) {
   var status = messageToStatus(msg);
-  var statusKey = path.join(PREFIX, msg.jobId + '-status.json');
+  var statusKey = path.join(PREFIX, msg.jobId + "-status.json");
   var statusPath = util.format("s3://%s/%s", BUCKET, statusKey);
   var params = {
     Bucket: BUCKET,
     Key: statusKey,
-    ACL: 'bucket-owner-full-control',
+    ACL: "bucket-owner-full-control",
     Body: JSON.stringify(status)
   };
   console.log("Writing status");
@@ -60,16 +60,16 @@ var logStatus = function logStatus(msg, callback) {
     if (err) {
       console.log("Error writing to %s", statusPath);
       return callback(err);
-    } else {
-      console.log("Wrote status to %s", statusPath);
-      console.log(JSON.stringify(status, null, 2));
-      return callback();
     }
+
+    console.log("Wrote status to %s", statusPath);
+    console.log(JSON.stringify(status, null, 2));
+    return callback();
   });
 };
 
 var isLastStageSuccess = function isLastStageSuccess(stage, status) {
-  return stage == "mosaic" && status == "FINISHED";
+  return stage === "mosaic" && status === "FINISHED";
 };
 
 var notifyJobComplete = function(jobId, images,callback) {
@@ -77,12 +77,12 @@ var notifyJobComplete = function(jobId, images,callback) {
   if (DEBUG) {
     console.log("Mock Hitting OAM Catalog endpoint for", jobId);
     return callback();
-  } else {
-    // Post to https://oam-catalog.herokuapp.com/tms for each image
-    // http://docs.openaerialmap.org/#api-TMS-PostTms
-
-    return callback();
   }
+
+  // Post to https://oam-catalog.herokuapp.com/tms for each image
+  // http://docs.openaerialmap.org/#api-TMS-PostTms
+
+  return callback();
 };
 
 var processMessage = function processTask(msg, callback) {
@@ -93,11 +93,11 @@ var processMessage = function processTask(msg, callback) {
   console.log("Got message: JobId = %s, Stage = %s, Status = %s", jobId, stage, status);
 
   return logStatus(msg, function(err) {
-    if(err) {
+    if (err) {
       return callback(err);
     }
 
-    if(isLastStageSuccess(stage, status)) {
+    if (isLastStageSuccess(stage, status)) {
       var images = msg.images;
       return notifyJobComplete(jobId, images, function(err) {
         if (err) {
