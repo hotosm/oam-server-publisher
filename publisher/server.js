@@ -1,18 +1,12 @@
 "use strict";
 
-var assert = require("assert"),
-    path = require("path"),
+var path = require("path"),
+    url = require("url"),
     util = require("util");
 
-var AWS = require('aws-sdk'),
-    bodyParser = require("body-parser"),
-    chance = require("chance"),
+var AWS = require("aws-sdk"),
     env = require("require-env"),
-    express = require("express"),
-    exquisite = require("exquisite"),
-    morgan = require("morgan"),
-    url = require("url"),
-    uuid = require("uuid");
+    exquisite = require("exquisite");
 
 var SQS_URL = env.require("OAM_STATUS_SQS_QUEUE_URL"),
     TOKEN = env.require("OAM_UPLOADER_TOKEN"),
