@@ -1,7 +1,6 @@
 # OpenAerialMap Server: Status publisher component
 
-[![Circle CI](https://circleci.com/gh/hotosm/oam-server-status-publisher/tree/master.svg?style=svg)](https://circleci.com/gh/hotosm/oam-server-status-publisher/tree/master)
-[![Docker Repository on Quay.io](https://quay.io/repository/hotosm/oam-server-status-publisher/status "Docker Repository on Quay.io")](https://quay.io/repository/hotosm/oam-server-status-publisher)
+[![Docker Repository on Quay.io](https://quay.io/repository/hotosm/oam-server-publisher/status "Docker Repository on Quay.io")](https://quay.io/repository/hotosm/oam-server-publisher)
 
 This component of OAM Server polls an SQS to watch for the status of tiling jobs. It will write the status to an S3 store that the API will use, and will hit the OAM Catalog endpoint
 to notify when tiling jobs are done.
