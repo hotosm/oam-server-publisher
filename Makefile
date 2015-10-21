@@ -8,6 +8,7 @@ publisher:
 start: publisher
 	@docker run \
 		--rm \
+		-it \
 		--name oam-server-publisher \
 		--env-file .env \
 		--volume $(PWD)/publisher:/app/publisher \
