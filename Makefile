@@ -7,28 +7,10 @@ publisher:
 
 start: publisher
 	@docker run \
-		--detach \
-		--name oam-server-publisher \
-		--publish 8000:8000 \
-		--volume $(PWD)/publisher:/app/publisher \
-		$(DOCKER_IMAGE) start
-
-test: start
-	@sleep 1
-
-	@docker run \
 		--rm \
-		--name oam-server-publisher-test \
-		--link oam-server-publisher:oam-server-publisher \
+		--name oam-server-publisher \
+		--env-file .env \
 		--volume $(PWD)/publisher:/app/publisher \
-		$(DOCKER_IMAGE) test
+		$(DOCKER_IMAGE)
 
-	@docker kill oam-server-publisher >> /dev/null
-	@docker rm oam-server-publisher >> /dev/null
-
-clean:
-	@docker kill oam-server-publisher >> /dev/null 2>&1 || true
-	@docker rm oam-server-publisher >> /dev/null 2>&1 || true
-
-
-.PHONY: all publisher start test clean
+.PHONY: all publisher start

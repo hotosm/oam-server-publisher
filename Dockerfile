@@ -1,27 +1,24 @@
-FROM node:0.10-slim
+FROM node:4.2-slim
 
 MAINTAINER Humanitarian OpenStreetMap Team
 
 ENV HOME /app
 ENV PORT 8000
+ENV npm_config_loglevel warn
 
-RUN mkdir -p /app/publisher
+RUN useradd \
+  --create-home \
+  --home-dir /app \
+  --user-group \
+  oam
+
+USER oam
 WORKDIR /app
 
 COPY ./publisher/package.json /app/
 
 RUN npm install
 
-RUN useradd \
-  --home-dir /app/publisher \
-  --system \
-  --user-group \
-  oam \
-  && chown -R oam:oam /app
+COPY publisher/ /app
 
-USER oam
-WORKDIR /app/publisher
-
-COPY publisher/ /app/publisher
-
-ENTRYPOINT ["npm"]
+CMD npm start
