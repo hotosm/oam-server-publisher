@@ -5,16 +5,18 @@ var path = require("path"),
     util = require("util");
 
 var AWS = require("aws-sdk"),
+    clone = require("clone"),
     debug = require("debug"),
     env = require("require-env"),
-    exquisite = require("exquisite");
+    exquisite = require("exquisite"),
+    request = require("request");
 
 var SQS_URL = env.require("OAM_STATUS_SQS_QUEUE_URL"),
-    TOKEN = env.require("OAM_UPLOADER_TOKEN"),
+    OAM_CATALOG_URL = process.env.OAM_CATALOG_URL || "https://api.openaerialmap.org/",
+    TOKEN = env.require("OAM_API_TOKEN"),
     BUCKET = env.require("OAM_STATUS_BUCKET"),
     PREFIX = env.require("OAM_STATUS_PREFIX"),
-    // TODO make this configurable
-    MOCK = true;
+    MOCK_OAM_API = process.env.MOCK_OAM_API === "true";
 
 var log = debug("oam:publisher"),
     s3 = new AWS.S3();
@@ -38,11 +40,14 @@ var createTileJson = function(jobId, target, images) {
 
 var messageToStatus = function messageToStatus(msg) {
   if (isLastStageSuccess(msg.stage, msg.status)) {
-    return {
-      status: "SUCCESS",
-      stage: "COMPLETE",
-      tileJson: createTileJson(msg.jobId, msg.target, msg.images)
-    };
+    // clone and overwrite the message to preserve additional metadata
+    var status = clone(msg);
+
+    status.status = "SUCCESS";
+    status.stage = "COMPLETE";
+    status.tileJson = createTileJson(msg.jobId, msg.target, msg.images);
+
+    return status;
   }
 
   return msg;
@@ -68,7 +73,7 @@ var logStatus = function logStatus(msg, callback) {
     }
 
     log("Wrote status to %s", statusPath);
-    log(JSON.stringify(status, null, 2));
+    log(status);
 
     return callback();
   });
@@ -78,20 +83,39 @@ var isLastStageSuccess = function isLastStageSuccess(stage, status) {
   return stage === "mosaic" && status === "FINISHED";
 };
 
-var notifyJobComplete = function(jobId, images,callback) {
-  // Hit OAM Catalog's endpoint
-  if (MOCK) {
+var notifyJobComplete = function(jobId, tms, images, callback) {
+  images = images.map(function(x) {
+    return {
+      uuid: x.replace(/^\/vsicurl\//, "")
+    };
+  });
+
+  if (MOCK_OAM_API) {
     log("Mock Hitting OAM Catalog endpoint for", jobId);
+
+    console.log("Payload:", {
+      uri: tms,
+      images: images
+    });
+
     return callback();
   }
 
-  // Post to https://oam-catalog.herokuapp.com/tms for each image
-  // http://docs.openaerialmap.org/#api-TMS-PostTms
-
-  return callback();
+  // Submit this TMS to https://api.openaerialmap.org/tms
+  // see http://docs.openaerialmap.org/#api-TMS-PostTms
+  return request.post({
+    auth: {
+      bearer: OAM_UPLOADER_TOKEN
+    },
+    uri: OAM_CATALOG_URL + "tms",
+    json: {
+      uri: tms,
+      images: images
+    }
+  }, callback);
 };
 
-var processMessage = function processTask(msg, callback) {
+var processMessage = function processMessage(msg, callback) {
   var jobId = msg.jobId,
       stage = msg.stage,
       status = msg.status;
@@ -104,14 +128,10 @@ var processMessage = function processTask(msg, callback) {
     }
 
     if (isLastStageSuccess(stage, status)) {
-      var images = msg.images;
-      return notifyJobComplete(jobId, images, function(err) {
-        if (err) {
-          return callback(err);
-        }
+      var images = msg.images,
+          tms = messageToStatus(msg).tileJson.tiles[0];
 
-        return callback();
-      });
+      return notifyJobComplete(jobId, tms, images, callback);
     }
 
     return callback();

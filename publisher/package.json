@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1.45",
+    "clone": "^1.0.2",
     "debug": "^2.2.0",
     "exquisite": "^1.2.0",
+    "request": "^2.65.0",
     "require-env": "0.0.4"
   },
   "bugs": {

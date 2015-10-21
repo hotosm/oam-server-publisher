@@ -51,8 +51,12 @@ b1d7b15d6863        oam/server-publisher:latest   "npm start"         19 seconds
 * `AWS_DEFAULT_REGION` - AWS region. Required.
   is in use.
 * `OAM_STATUS_SQS_QUEUE_URL` - SQS queue URL to listen for status updates on. Required.
-* `OAM_UPLOADER_TOKEN` - OAM Catalog token. Required.
+* `OAM_CATALOG_URL` - OAM Catalog API URL. Defaults to
+  `https://api.openaerialmap.org`
+* `OAM_API_TOKEN` - OAM API token. Required.
 * `OAM_STATUS_BUCKET` - S3 bucket containing task statuses. Required.
 * `OAM_STATUS_PREFIX` - Path prefix for task statuses. Required.
 * `DEBUG` - Debug logging configuration. Set to `oam:*` for all messages.
   Optional.
+* `MOCK_OAM_API` - Output the payload that would have been sent to the OAM API.
+  Set to `true` to enable. Optional.
