@@ -15,10 +15,10 @@ RUN useradd \
 USER oam
 WORKDIR /app
 
-COPY ./publisher/package.json /app/
+COPY ./package.json /app/
 
 RUN npm install
 
-COPY publisher/ /app
+COPY . /app
 
 CMD npm start
