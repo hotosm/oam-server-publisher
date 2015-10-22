@@ -13,7 +13,7 @@ var AWS = require("aws-sdk"),
 
 var SQS_URL = env.require("OAM_STATUS_SQS_QUEUE_URL"),
     OAM_CATALOG_URL = process.env.OAM_CATALOG_URL || "https://api.openaerialmap.org/",
-    TOKEN = env.require("OAM_API_TOKEN"),
+    OAM_API_TOKEN = env.require("OAM_API_TOKEN"),
     BUCKET = env.require("OAM_STATUS_BUCKET"),
     PREFIX = env.require("OAM_STATUS_PREFIX"),
     MOCK_OAM_API = process.env.MOCK_OAM_API === "true";
@@ -105,7 +105,7 @@ var notifyJobComplete = function(jobId, tms, images, callback) {
   // see http://docs.openaerialmap.org/#api-TMS-PostTms
   return request.post({
     auth: {
-      bearer: OAM_UPLOADER_TOKEN
+      bearer: OAM_API_TOKEN
     },
     uri: OAM_CATALOG_URL + "tms",
     json: {
