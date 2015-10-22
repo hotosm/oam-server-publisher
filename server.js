@@ -112,7 +112,15 @@ var notifyJobComplete = function(jobId, tms, images, callback) {
       uri: tms,
       images: images
     }
-  }, callback);
+  }, function(err, rsp, body) {
+    if (err) {
+      log("Error calling the OAM API:", err);
+    } else {
+      log("OAM response: %j", body);
+    }
+
+    return callback.apply(null, arguments);
+  });
 };
 
 var processMessage = function processMessage(msg, callback) {
