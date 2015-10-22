@@ -1,6 +1,6 @@
 {
   "name": "oam-server-publisher",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "OAM Server Publisher",
   "main": "server.js",
   "author": "Rob Emanuele <rdemanuele@gmail.com>",
